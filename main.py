@@ -8,11 +8,10 @@ from crop_water import calculate_etc
 app = FastAPI(title="Irrigation AI Engine")
 PROFILE_FILE = "farm_profile.json"
 
-class FarmProfile(BaseModel):
-    crop: str
-    soil_type: str
-    slope: str
-    growth_stage: str
+
+
+# class FarmProfile(BaseModel):
+    
 
 class WeatherInput(BaseModel):
     temperature: float
@@ -22,28 +21,32 @@ class WeatherInput(BaseModel):
     rain_mm: float
     rain_intensity: int = 1
     soil_moisture: float
+    crop: str 
+    soil_type: str
+    slope: str
+    growth_stage: str
 
 soil_map = {"sandy": 0.8, "loam": 1.0, "clay": 1.2}
 slope_map = {"flat": 1.0, "mild": 0.9, "steep": 0.8}
 stage_map = {"early": 0.7, "mid": 1.2, "late": 1.0}
 
-@app.post("/setup")
-def setup_farm(profile: FarmProfile):
-    with open(PROFILE_FILE, "w") as f:
-        json.dump(profile.dict(), f)
-    return {"status": "Profile saved"}
+# @app.post("/setup")
+# def setup_farm(profile: FarmProfile):
+#     with open(PROFILE_FILE, "w") as f:
+#         json.dump(profile.dict(), f)
+#     return {"status": "Profile saved"}
 
 @app.post("/predict")
 def predict(data: WeatherInput):
-    with open(PROFILE_FILE) as f:
-        profile = json.load(f)
+    # with open(PROFILE_FILE) as f:
+    #     profile = json.load(f)
 
-    soil_factor = soil_map.get(profile["soil_type"], 1.0)
-    slope_factor = slope_map.get(profile["slope"], 1.0)
-    stage_factor = stage_map.get(profile["growth_stage"], 1.0)
+    soil_factor = soil_map.get(data.soil_type, 1.0)
+    slope_factor = slope_map.get(data.slope, 1.0)
+    stage_factor = stage_map.get(data.growth_stage, 1.0)
 
     eto_daily = calculate_eto(data.temperature, data.humidity, data.wind_speed, 0.0864*data.solar_radiation)
-    etc_daily = calculate_etc(eto_daily, profile["crop"])
+    etc_daily = calculate_etc(eto_daily, data.crop)
     et_15min = etc_daily / 96
 
     return decide_irrigation(
@@ -54,7 +57,7 @@ def predict(data: WeatherInput):
         rain_mm=data.rain_mm,
         rain_intensity=data.rain_intensity,
         current_sm=data.soil_moisture,
-        crop=profile["crop"],
+        crop=data.crop,
         soil_type_factor=soil_factor,
         slope_factor=slope_factor,
         growth_stage_factor=stage_factor
