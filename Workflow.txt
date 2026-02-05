@@ -1,0 +1,7 @@
+Start of Process:
+
+1. Calculate ETo using parameters taken from openweather api
+(file name: fao_56.py)
+
+2. Convert into ETc using Crop coefficients
+(file name:)
