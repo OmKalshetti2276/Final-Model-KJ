@@ -10,13 +10,13 @@ growth_stage_factor = 1.2   # mid stage
 
 
 # ---------- WEATHER DATA (Simulated API data) ----------
-temperature = 32
+temperature = 45
 humidity = 55
 wind_speed = 3.2
 solar_radiation = 22
-rain_mm = 0
+rain_mm = 44
 rain_intensity = 2
-soil_moisture = 34
+soil_moisture = 32
 
 
 # ---------- STEP 1: FAO56 ET0 ----------
